@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Park Details - RideFinder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+<body>
+
+    <!-- Header injected by app.js -->
+    <header id="main-header" class="main-header"></header>
+
+    <!-- Main Content: Filled by JS -->
+    <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12"></main>
+
+    <!-- Footer -->
+    <footer class="mt-16 py-8 border-t" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-text-secondary">
+            <p>&copy; 2025 RideFinder. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ once: true, duration: 800 });
+            initializeTheme();
+            renderHeader();
+
+            const mainContent = document.getElementById('main-content');
+            const urlParams = new URLSearchParams(window.location.search);
+            const parkId = urlParams.get('id');
+
+            const renderParkDetails = (park) => {
+                // API CALL: fetch recent reviews for park
+                const parkReviews = MOCK_REVIEWS.filter(r => r.parkId === park.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
+                mainContent.innerHTML = createParkDetailsHTML(park, parkReviews);
+                setupBookingWidget(park);
+                // We need to re-initialize AOS after new content is added to the DOM
+                setTimeout(() => AOS.refresh(), 50); 
+            };
+
+            const setupBookingWidget = (park) => {
+                const adultsInput = document.getElementById('adults');
+                const kidsInput = document.getElementById('kids');
+                const daysSelect = document.getElementById('days');
+                const totalPriceEl = document.getElementById('total-price');
+                const addToCartBtn = document.getElementById('add-to-cart-btn');
+
+                const updatePrice = () => {
+                    let adults = parseInt(adultsInput.value) || 0;
+                    let kids = parseInt(kidsInput.value) || 0;
+                    const days = parseInt(daysSelect.value) || 1;
+                    
+                    if (adults < 0) adults = 0;
+                    if (kids < 0) kids = 0;
+                    adultsInput.value = adults;
+                    kidsInput.value = kids;
+                    
+                    const total = (adults * park.price.adult + kids * park.price.child) * days;
+                    totalPriceEl.textContent = `$${total.toFixed(2)}`;
+                    
+                    const totalGuests = adults + kids;
+                    addToCartBtn.disabled = totalGuests <= 0;
+                };
+
+                [adultsInput, kidsInput, daysSelect].forEach(el => el.addEventListener('input', updatePrice));
+                updatePrice();
+
+                addToCartBtn.addEventListener('click', () => {
+                    const adults = parseInt(adultsInput.value);
+                    const kids = parseInt(kidsInput.value);
+
+                    if (adults + kids === 0) {
+                        showToast('error', 'Please add at least one ticket.');
+                        return;
+                    }
+
+                    const item = {
+                        parkId: park.id,
+                        parkName: park.name,
+                        parkImage: park.imageUrl,
+                        tickets: { adults, kids },
+                        days: parseInt(daysSelect.value),
+                        unitPrice: park.price,
+                    };
+                    // API CALL: add booking item to cart
+                    addItemToCart(item);
+                    updateCartCount();
+                    showToast('success', `${park.name} added to cart!`);
+                });
+            };
+
+            if (parkId) {
+                mainContent.innerHTML = createParkDetailsSkeletonHTML();
+                setTimeout(() => {
+                    // API CALL: fetch park by id
+                    const park = MOCK_PARKS.find(p => p.id === parkId);
+                    if (park) {
+                        document.title = `${park.name} - RideFinder`; // Update page title
+                        renderParkDetails(park);
+                    } else {
+                        mainContent.innerHTML = createEmptyStateHTML('Park Not Found', 'The park you are looking for does not exist.');
+                    }
+                }, 800);
+            } else {
+                mainContent.innerHTML = createEmptyStateHTML('No Park Specified', 'Please select a park from the homepage to see details.');
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - RideFinder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Checkout Header -->
+    <header class="bg-bg-secondary border-b" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center">
+            <a href="index.html" class="logo-link mx-auto">
+                <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"/><path d="m15 12-3 3-3-3"/></svg>
+                <span>RideFinder Checkout</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <form id="checkout-form" novalidate>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                <!-- Left Column: Forms -->
+                <div class="md:col-span-2 bg-bg-secondary p-6 sm:p-8 rounded-lg shadow-lg">
+                    <section>
+                        <h2 class="text-2xl font-bold mb-6 border-b pb-3" style="border-color: var(--border-color);">Billing & Shipping</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" id="name" name="name" class="form-input" required>
+                                <p id="error-name" class="error-message"></p>
+                            </div>
+                            <div>
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                                <p id="error-email" class="error-message"></p>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" required>
+                                <p id="error-phone" class="error-message"></p>
+                            </div>
+                            <div class="sm:col-span-2 grid grid-cols-3 gap-4">
+                               <div class="col-span-1">
+                                    <label for="streetNumber" class="form-label">Apt/Suite</label>
+                                    <input type="text" id="streetNumber" name="streetNumber" class="form-input" required>
+                                    <p id="error-streetNumber" class="error-message"></p>
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="streetName" class="form-label">Street Address</label>
+                                    <input type="text" id="streetName" name="streetName" class="form-input" required>
+                                    <p id="error-streetName" class="error-message"></p>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" id="city" name="city" class="form-input" required>
+                                <p id="error-city" class="error-message"></p>
+                            </div>
+                             <div>
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" id="state" name="state" class="form-input" required>
+                                <p id="error-state" class="error-message"></p>
+                            </div>
+                             <div>
+                                <label for="zip" class="form-label">ZIP Code</label>
+                                <input type="text" id="zip" name="zip" class="form-input" required>
+                                <p id="error-zip" class="error-message"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="mt-8 pt-6 border-t" style="border-color: var(--border-color);">
+                        <h2 class="text-2xl font-bold mb-6">Payment Information</h2>
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                             <div class="sm:col-span-2">
+                                <label for="cardholder" class="form-label">Cardholder Name</label>
+                                <input type="text" id="cardholder" name="cardholder" class="form-input" required>
+                                <p id="error-cardholder" class="error-message"></p>
+                            </div>
+                             <div class="sm:col-span-2">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" id="cardNumber" name="cardNumber" class="form-input" placeholder="0000 0000 0000 0000" required>
+                                <p id="error-cardNumber" class="error-message"></p>
+                            </div>
+                            <div>
+                                <label for="expiration" class="form-label">Expiration (MM/YY)</label>
+                                <input type="text" id="expiration" name="expiration" class="form-input" placeholder="MM/YY" required>
+                                <p id="error-expiration" class="error-message"></p>
+                            </div>
+                             <div>
+                                <label for="cvc" class="form-label">CVC</label>
+                                <input type="text" id="cvc" name="cvc" class="form-input" placeholder="123" required>
+                                <p id="error-cvc" class="error-message"></p>
+                            </div>
+                         </div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Order Summary -->
+                <div class="md:col-span-1">
+                    <div id="order-summary" class="cart-summary">
+                        <!-- Summary injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/zod@3.22.4/lib/index.umd.min.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            const orderSummaryContainer = document.getElementById('order-summary');
+            const cart = getCart();
+
+            if (!cart || cart.items.length === 0) {
+                 window.location.href = 'cart.html';
+                 return;
+            }
+            
+            orderSummaryContainer.innerHTML = createCheckoutSummaryHTML(cart);
+
+            const checkoutForm = document.getElementById('checkout-form');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            const checkoutSchema = z.object({
+                name: z.string().min(2, 'Full name is required'),
+                email: z.string().email('Invalid email address'),
+                phone: z.string().min(10, 'A valid phone number is required'),
+                streetNumber: z.string().min(1, 'Apt/Suite is required'),
+                streetName: z.string().min(2, 'Street name is required'),
+                city: z.string().min(2, 'City is required'),
+                state: z.string().min(2, 'State is required'),
+                zip: z.string().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code'),
+                cardholder: z.string().min(2, 'Cardholder name is required'),
+                cardNumber: z.string().min(13).max(19).refine(val => /^\d+$/.test(val), 'Card must be numbers'),
+                expiration: z.string().regex(/^(0[1-9]|1[0-2])\s?\/\s?\d{2}$/, 'Use MM/YY format'),
+                cvc: z.string().min(3, 'CVC must be 3-4 digits').max(4),
+            });
+            
+            const validateForm = () => {
+                const formData = new FormData(checkoutForm);
+                const data = Object.fromEntries(formData.entries());
+                data.cardNumber = data.cardNumber?.replace(/\s/g, '');
+                
+                document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+                document.querySelectorAll('.form-input').forEach(el => el.removeAttribute('aria-invalid'));
+
+                const result = checkoutSchema.safeParse(data);
+                
+                if (!result.success) {
+                    result.error.issues.forEach(issue => {
+                        const errorEl = document.getElementById(`error-${issue.path[0]}`);
+                        const inputEl = document.getElementById(issue.path[0]);
+                        if(errorEl) errorEl.textContent = issue.message;
+                        if(inputEl) inputEl.setAttribute('aria-invalid', 'true');
+                    });
+                    checkoutBtn.disabled = true;
+                    return false;
+                }
+                
+                checkoutBtn.disabled = false;
+                return true;
+            };
+
+            checkoutForm.addEventListener('input', validateForm);
+
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (validateForm()) {
+                    checkoutBtn.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Processing...`;
+                    checkoutBtn.disabled = true;
+
+                    setTimeout(() => { // Simulate API call
+                        clearCart();
+                        updateCartCount();
+                        const orderId = Math.floor(100000 + Math.random() * 900000);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Placed!',
+                            html: `Your order <strong>#${orderId}</strong> has been confirmed. <br> A confirmation email has been sent.`,
+                            confirmButtonText: 'Back to Homepage',
+                            customClass: { popup: document.documentElement.classList.contains('dark') ? 'dark-swal' : '' }
+                        }).then(() => {
+                            window.location.href = 'index.html';
+                        });
+                    }, 2000);
+                }
+            });
+            
+            // Initial validation check
+            validateForm();
+        });
+    </script>
+</body>
+</html>
+

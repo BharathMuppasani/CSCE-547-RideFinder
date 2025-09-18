@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews - RideFinder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header injected by app.js -->
+    <header id="main-header" class="main-header"></header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Content injected by JS -->
+    </main>
+    
+    <!-- Add Review Modal -->
+    <div id="review-modal" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Write a Review</h2>
+                <button id="close-modal-btn" class="text-text-secondary hover:text-text-primary text-3xl font-light">&times;</button>
+            </div>
+            <form id="review-form" novalidate>
+                <div class="mb-4">
+                    <label class="form-label">Your Rating</label>
+                    <div id="star-rating-modal" class="flex items-center gap-1">
+                        <!-- Stars injected by JS -->
+                    </div>
+                    <input type="hidden" id="rating-value" name="rating" value="0">
+                </div>
+                <div class="mb-4">
+                    <label for="review-title" class="form-label">Review Title</label>
+                    <input type="text" id="review-title" class="form-input" required>
+                </div>
+                 <div class="mb-4">
+                    <label for="review-body" class="form-label">Your Review</label>
+                    <textarea id="review-body" rows="5" class="form-input" required></textarea>
+                </div>
+                <div class="mb-6">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="anonymous-check" class="h-4 w-4 rounded border-gray-300 text-accent-primary focus:ring-accent-primary">
+                        <span class="ml-2 text-sm text-text-secondary">Post as anonymous</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="mt-16 py-8 border-t" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-text-secondary">
+            <p>&copy; 2025 RideFinder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            renderHeader();
+
+            const mainContent = document.getElementById('main-content');
+            const urlParams = new URLSearchParams(window.location.search);
+            const parkId = urlParams.get('id');
+
+            const renderReviewsPage = (park, reviews) => {
+                mainContent.innerHTML = createReviewsPageHTML(park, reviews);
+                const addReviewBtn = document.getElementById('add-review-btn');
+                if (addReviewBtn) {
+                    addReviewBtn.addEventListener('click', openModal);
+                }
+            };
+
+            // API CALL: fetch all reviews for park
+            if(parkId) {
+                const park = MOCK_PARKS.find(p => p.id === parkId);
+                if (park) {
+                    const reviews = MOCK_REVIEWS.filter(r => r.parkId === parkId).sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    document.title = `Reviews for ${park.name} - RideFinder`;
+                    renderReviewsPage(park, reviews);
+                } else {
+                     mainContent.innerHTML = createEmptyStateHTML('Park Not Found', 'The park you are looking for does not exist.');
+                }
+            } else {
+                mainContent.innerHTML = createEmptyStateHTML('No Park Specified', 'Please select a park from the homepage to see reviews.');
+            }
+            
+            // Modal Logic
+            const modal = document.getElementById('review-modal');
+            const reviewForm = document.getElementById('review-form');
+            const ratingValueInput = document.getElementById('rating-value');
+            
+            const openModal = () => modal.classList.add('active');
+            const closeModal = () => {
+                modal.classList.remove('active');
+                reviewForm.reset(); // Clear form on close
+                stars.forEach(s => s.classList.remove('selected'));
+                ratingValueInput.value = '0';
+            };
+
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => e.target === modal && closeModal());
+            document.addEventListener('keydown', (e) => e.key === "Escape" && closeModal());
+
+            // Star Rating Logic
+            const starContainer = document.getElementById('star-rating-modal');
+            starContainer.innerHTML = Array(5).fill(0).map((_, i) => `<span data-value="${i + 1}" class="star" role="button" aria-label="${i+1} stars">&starf;</span>`).join('');
+            const stars = starContainer.querySelectorAll('.star');
+
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const value = star.dataset.value;
+                    ratingValueInput.value = value;
+                    stars.forEach(s => s.classList.toggle('selected', s.dataset.value <= value));
+                });
+            });
+            
+            reviewForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // API CALL: create review
+                if (ratingValueInput.value === '0') {
+                    showToast('error', 'Please select a rating.');
+                    return;
+                }
+                if (!document.getElementById('review-title').value.trim() || !document.getElementById('review-body').value.trim()) {
+                    showToast('error', 'Please fill out all fields.');
+                    return;
+                }
+                
+                closeModal();
+                showToast('success', 'Thank you! Your review has been submitted.');
+                 // In a real app, you would re-fetch and re-render the reviews here.
+            });
+        });
+    </script>
+</body>
+</html>
+

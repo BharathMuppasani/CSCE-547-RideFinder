@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - RideFinder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header injected by app.js -->
+    <header id="main-header" class="main-header"></header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold mb-8">Your Shopping Cart</h1>
+        <div id="cart-content" class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            <!-- Cart Items (Main Column) -->
+            <div id="cart-items-container" class="md:col-span-2 space-y-4">
+                <!-- Cart items injected by JS -->
+            </div>
+            <!-- Summary (Side Column) -->
+            <div id="cart-summary-container" class="md:col-span-1">
+                <!-- Summary injected by JS -->
+            </div>
+        </div>
+        
+        <!-- Empty Cart State -->
+        <div id="empty-cart" class="hidden">
+            <!-- Empty state injected by JS -->
+        </div>
+    </main>
+
+    <footer class="mt-16 py-8 border-t" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-text-secondary">
+            <p>&copy; 2025 RideFinder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            renderHeader();
+            
+            const cartContentEl = document.getElementById('cart-content');
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartSummaryContainer = document.getElementById('cart-summary-container');
+            const emptyCartEl = document.getElementById('empty-cart');
+
+            const renderCart = () => {
+                // API CALL: fetch cart
+                const cart = getCart();
+                updateCartCount();
+
+                if (!cart || cart.items.length === 0) {
+                    cartContentEl.classList.add('hidden');
+                    emptyCartEl.innerHTML = createEmptyStateHTML('Your Cart is Empty', "Looks like you haven't added any rides yet.", 'Explore Parks', 'index.html');
+                    emptyCartEl.classList.remove('hidden');
+                    return;
+                }
+                
+                cartContentEl.classList.remove('hidden');
+                emptyCartEl.classList.add('hidden');
+
+                cartItemsContainer.innerHTML = cart.items.map(createCartItemHTML).join('');
+                cartSummaryContainer.innerHTML = createCartSummaryHTML(cart);
+
+                attachEventListeners();
+            };
+            
+            const attachEventListeners = () => {
+                document.querySelectorAll('.remove-item-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const itemId = e.currentTarget.dataset.itemId;
+                        // API CALL: remove booking item
+                        removeItemFromCart(itemId);
+                        renderCart();
+                        showToast('info', 'Item removed from cart.');
+                    });
+                });
+
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('change', (e) => {
+                        const itemId = e.currentTarget.dataset.itemId;
+                        const ticketType = e.currentTarget.dataset.type;
+                        const newQuantity = parseInt(e.currentTarget.value, 10);
+                         if (newQuantity < 0) {
+                            e.currentTarget.value = 0;
+                            return;
+                        }
+                        // API CALL: update booking quantity
+                        updateCartItemQuantity(itemId, ticketType, newQuantity);
+                        renderCart();
+                    });
+                });
+            };
+
+            renderCart();
+        });
+    </script>
+</body>
+</html>
+

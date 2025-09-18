@@ -1,0 +1,526 @@
+/* 1. VARIABLES & THEME SETUP */
+:root {
+    --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    /* Light Theme */
+    --bg-primary: #F8F9FA;      /* Lighter, neutral gray */
+    --bg-secondary: #FFFFFF;    /* White for cards */
+    --text-primary: #212529;    /* Darker, more readable black */
+    --text-secondary: #6C757D;  /* Muted gray */
+    --accent-primary: #E9751A;  /* Vibrant orange */
+    --accent-hover: #D06817;   /* Darker orange for hover */
+    --border-color: #DEE2E6;    /* Standard border color */
+    --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+html.dark {
+    /* Dark Theme */
+    --bg-primary: #121212;       /* True dark background */
+    --bg-secondary: #1E1E1E;    /* Lighter dark gray for cards */
+    --text-primary: #EAE0D5;    /* Light cream */
+    --text-secondary: #A9A9A9;  /* Muted light gray */
+    --border-color: #3A3A3A;    /* Dark border */
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+/* 2. BASE STYLES & TYPOGRAPHY */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+    line-height: 1.6;
+}
+
+a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+a:hover {
+    color: var(--accent-hover);
+}
+
+/* 3. HEADER & NAVIGATION */
+.main-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+html.dark .main-header {
+     background-color: rgba(30, 30, 30, 0.8);
+     backdrop-filter: blur(10px);
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4rem; /* 64px */
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+.logo-link:hover { color: var(--accent-primary); }
+.logo-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-primary);
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 99px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+.theme-toggle:hover {
+    background-color: var(--bg-primary);
+}
+.theme-toggle .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-secondary);
+}
+.theme-toggle .sun-icon { display: none; }
+html.dark .theme-toggle .moon-icon { display: none; }
+html.dark .theme-toggle .sun-icon { display: block; }
+
+
+.cart-link {
+    position: relative;
+    color: var(--text-primary);
+}
+.cart-link .icon { width: 24px; height: 24px; }
+.cart-link:hover { color: var(--accent-primary); }
+.cart-item-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--accent-primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: none; /* Hidden by default, shown by JS */
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-secondary);
+}
+
+/* 4. BUTTONS & FORMS */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+.btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+.btn-primary {
+    background-color: var(--accent-primary);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+.btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+html.dark .btn:disabled {
+    background-color: #555;
+    color: #999;
+}
+
+.form-input, .form-select {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(233, 117, 26, 0.2);
+}
+.form-input[aria-invalid="true"] {
+    border-color: #e53e3e;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.error-message {
+    color: #e53e3e;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    min-height: 1rem;
+}
+
+/* 5. CARD COMPONENTS */
+.park-card {
+    background-color: var(--bg-secondary);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.park-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px var(--shadow-color);
+}
+.park-card__image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border-color);
+}
+.park-card__content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.park-card__location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0.5rem;
+}
+.park-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.park-card__rating-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+.park-card__description {
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    color: var(--text-secondary);
+}
+
+.star-rating .icon {
+    width: 16px;
+    height: 16px;
+    color: #f59e0b;
+}
+.star-rating .icon--empty {
+    color: var(--border-color);
+}
+
+.review-card {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+/* 6. PAGE-SPECIFIC STYLES */
+
+/* Home Page */
+.hero {
+    position: relative;
+    padding: 5rem 1rem;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    border-radius: 0;
+    margin-bottom: 3rem;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+}
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+.hero p {
+    max-width: 600px;
+    margin: 1rem auto 0;
+    color: rgba(255,255,255,0.9);
+}
+
+.filters-section {
+    background-color: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+.parks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* Park Details Page */
+.details-hero-image {
+    width: 100%;
+    height: clamp(250px, 50vh, 450px);
+    object-fit: cover;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}
+.booking-widget {
+    background-color: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    position: sticky;
+    top: 6rem; /* 4rem header + 2rem space */
+}
+.booking-widget__total {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Cart & Checkout */
+.cart-item {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+@media (min-width: 640px) {
+    .cart-item {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+.cart-item__image {
+    width: 100px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    flex-shrink: 0;
+}
+.cart-item__details {
+    flex-grow: 1;
+    width: 100%;
+}
+.cart-item__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+@media (min-width: 640px) {
+   .cart-item__actions {
+        width: auto;
+        gap: 1.5rem;
+   }
+}
+.cart-item__quantity-input {
+    width: 70px;
+    text-align: center;
+}
+.remove-item-btn {
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.2s, background-color 0.2s;
+}
+.remove-item-btn:hover {
+    color: #e53e3e;
+    background-color: var(--bg-primary);
+}
+
+
+.cart-summary {
+    background-color: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    position: sticky;
+    top: 6rem;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+.summary-total {
+    border-top: 2px solid var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+html.dark .summary-total {
+     border-top-color: var(--text-primary);
+}
+
+
+/* 7. UTILITY & HELPERS */
+.empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: var(--bg-secondary);
+    border: 2px dashed var(--border-color);
+    border-radius: 1rem;
+}
+.empty-state .icon {
+    width: 64px;
+    height: 64px;
+    color: var(--border-color);
+    margin: 0 auto 1rem;
+}
+
+/* 8. SKELETON LOADERS */
+.skeleton-card {
+    background-color: var(--bg-secondary);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+@keyframes pulse {
+  50% { opacity: 0.5; }
+}
+.skeleton-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-color: var(--border-color);
+    border-radius: 0.25rem;
+}
+.skeleton-img { height: 200px; }
+.skeleton-text { height: 1rem; }
+
+
+/* 9. MODAL & SWEETALERT STYLES */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background-color: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+#star-rating-modal .star {
+    font-size: 2.5rem;
+    color: var(--border-color);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+#star-rating-modal .star:hover {
+    transform: scale(1.1);
+}
+#star-rating-modal .star.selected {
+    color: #f59e0b;
+}
+
+/* Dark theme for SweetAlert2 */
+.dark-swal.swal2-popup {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+.dark-swal .swal2-title {
+    color: var(--text-primary) !important;
+}
+.dark-swal .swal2-html-container {
+     color: var(--text-secondary) !important;
+}

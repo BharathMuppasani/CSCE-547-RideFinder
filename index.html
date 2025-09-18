@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Next Ride - RideFinder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+<body>
+
+    <!-- Header injected by app.js -->
+    <header id="main-header" class="main-header"></header>
+
+    <!-- Hero Section -->
+    <section class="hero" style="background-image: url('https://placehold.co/1600x600/1C1C1C/E9751A?text=RideFinder');">
+        <div class="hero-content container" data-aos="fade-up">
+            <h1 class="text-4xl md:text-6xl font-extrabold">Your Adventure Awaits.</h1>
+            <p class="text-lg md:text-xl">Discover and book the best dirt-bike parks and motocross tracks near you.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Filters -->
+        <section id="filters" class="filters-section" data-aos="fade-up" data-aos-delay="100">
+            <div class="filters-grid">
+                <div>
+                    <label for="location-search" class="form-label">Location</label>
+                    <input type="text" id="location-search" placeholder="Search by location..." class="form-input">
+                </div>
+                <div>
+                    <label for="rating-filter" class="form-label">Minimum Rating</label>
+                    <select id="rating-filter" class="form-select">
+                        <option value="0">Any Rating</option>
+                        <option value="4.5">4.5 Stars & Up</option>
+                        <option value="4">4 Stars & Up</option>
+                        <option value="3">3 Stars & Up</option>
+                    </select>
+                </div>
+                <button id="filter-btn" class="btn btn-primary w-full md:w-auto md:self-end">Apply Filters</button>
+            </div>
+        </section>
+
+        <!-- Park Listings -->
+        <section id="park-listings" class="mt-12">
+            <h2 class="text-3xl font-bold mb-6">Featured Parks</h2>
+            <div id="parks-grid" class="parks-grid">
+                <!-- Skeletons injected by JS -->
+            </div>
+            <div id="empty-state" class="hidden">
+                <!-- Empty state injected by JS -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="mt-16 py-8 border-t" style="border-color: var(--border-color);">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-text-secondary">
+            <p>&copy; 2025 RideFinder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ once: true, duration: 800, offset: 100 });
+            initializeTheme();
+            renderHeader();
+
+            const parksGrid = document.getElementById('parks-grid');
+            const emptyState = document.getElementById('empty-state');
+            const locationSearch = document.getElementById('location-search');
+            const ratingFilter = document.getElementById('rating-filter');
+            const filterBtn = document.getElementById('filter-btn');
+
+            const renderSkeletons = (count) => {
+                parksGrid.innerHTML = Array(count).fill(0).map(() => createParkCardSkeletonHTML()).join('');
+                emptyState.classList.add('hidden');
+                parksGrid.classList.remove('hidden');
+            };
+
+            const renderParks = (parks) => {
+                if (parks.length === 0) {
+                    parksGrid.innerHTML = '';
+                    parksGrid.classList.add('hidden');
+                    emptyState.innerHTML = createEmptyStateHTML('No Parks Found', 'Try adjusting your filters or checking back later!');
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                parksGrid.innerHTML = '';
+                emptyState.classList.add('hidden');
+                parksGrid.classList.remove('hidden');
+                
+                parks.forEach((park, index) => {
+                    const parkCardHTML = createParkCardHTML(park);
+                    const cardElement = new DOMParser().parseFromString(parkCardHTML, 'text/html').body.firstChild;
+                    cardElement.setAttribute('data-aos', 'fade-up');
+                    cardElement.setAttribute('data-aos-delay', index * 50);
+                    parksGrid.appendChild(cardElement);
+                });
+                 // Refresh AOS to apply animations to new elements
+                setTimeout(() => AOS.refresh(), 50);
+            };
+
+            const fetchAndDisplayParks = () => {
+                renderSkeletons(6);
+
+                setTimeout(() => {
+                    const locationQuery = locationSearch.value.toLowerCase().trim();
+                    const minRating = parseFloat(ratingFilter.value);
+                    // API CALL: fetch parks list
+                    const filteredParks = MOCK_PARKS.filter(park => 
+                        (park.name.toLowerCase().includes(locationQuery) || park.location.toLowerCase().includes(locationQuery)) && 
+                        park.rating >= minRating
+                    );
+                    renderParks(filteredParks);
+                }, 800); 
+            };
+            
+            filterBtn.addEventListener('click', fetchAndDisplayParks);
+            locationSearch.addEventListener('keyup', (e) => e.key === 'Enter' && fetchAndDisplayParks());
+            
+            // Initial load
+            fetchAndDisplayParks();
+        });
+    </script>
+</body>
+</html>
+
